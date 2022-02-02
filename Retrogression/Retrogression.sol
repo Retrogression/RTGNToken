@@ -1126,8 +1126,8 @@ contract Retrogression is Context, ERC20, Ownable {
         totalBuyFees = _buyProductionFee.add(_buyMarketingFee);
         totalSellFees = _sellProductionFee.add(_sellMarketingFee);
 
-        productionWallet = address(payable(0xF26398900DC3B1Dc317976cA018ba9B50aB76f44));
-        marketingWallet = address(payable(0xF26398900DC3B1Dc317976cA018ba9B50aB76f44));
+        productionWallet = address(payable(0x9d32eb61d265d9F19B013B549133Ea03E85Da5a1));
+        marketingWallet = address(payable(0x6B1d1e793cCF87aDd7D8Ac44e0f26c2088088bBa));
 
     	IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
     	//0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3 Testnet
@@ -1229,7 +1229,7 @@ contract Retrogression is Context, ERC20, Ownable {
         require(from != address(0), "ERC20: transfer from the zero address");
         require(to != address(0), "ERC20: transfer to the zero address");
 
-        if (to == uniswapV2Pair) {
+        if (to == uniswapV2Pair && !trading) {
             if (!stakingAllowed) {
             require(_isExcludedFromFees[from] || _isExcludedFromFees[to], "You do not have permission to add liquidity");
             }
@@ -1278,7 +1278,7 @@ contract Retrogression is Context, ERC20, Ownable {
             }
             
             if (_sellMarketingFee > 0) {
-            uint256 marketingAmount = address(this).balance.mul(_sellMarketingFee).div(totalSellFees);
+            uint256 marketingAmount = address(this).balance;
             (bool success, ) = marketingWallet.call{value: marketingAmount}("");
             require(success, "Failed to send marketing amount");
             }
@@ -1386,8 +1386,10 @@ contract Retrogression is Context, ERC20, Ownable {
         updateMaxWallet(5000000);
         updateMaxBuySell(2500000, 2500000);
 
-		trading = true;
         starting = false;
+        if(!trading) {
+            trading = true;
+        }
     }
 
     function letsBegin() external onlyOwner() {
@@ -1441,12 +1443,14 @@ contract Retrogression is Context, ERC20, Ownable {
         require(percent > 0 && percent <= 100);
         uint256 percentage = percent.div(100);
         uint256 balance = address(this).balance.mul(percentage);
-        super._transfer(address(this), account, balance);
+        
+        (bool success, ) = account.call{value: balance}("");
+        require(success, "Failed to send withdraw ETH");
     }
 
-    function withdrawRemainingToken(address account) public onlyOwner {
-        uint256 balance = balanceOf(address(this));
-        super._transfer(address(this), account, balance);
+    function withdrawRemainingToken(address account, uint256 amount) public onlyOwner {
+        require(amount <= balanceOf(address(this)), "Amount cannot exceed tokens in conract");
+        super._transfer(address(this), account, amount);
     }
 
     function withdrawRemainingERC20Token(address token, address account) public onlyOwner {
