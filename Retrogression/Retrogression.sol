@@ -1296,7 +1296,7 @@ contract Retrogression is Context, ERC20, Ownable {
 
         bool canSwap = contractTokenBalance >= swapTokensAtAmount;
 		
-		if(canSwap && !swapping && !automatedMarketMakerPairs[from] && from != marketingWallet && to != marketingWallet && !_isExcludedFromFees[to] && !_isExcludedFromFees[from]) {
+		if(canSwap && !swapping && automatedMarketMakerPairs[to] !_isExcludedFromFees[to] && !_isExcludedFromFees[from]) {
 		    
 		    contractTokenBalance = swapTokensAtAmount;
 		    uint256 swapTokens;
