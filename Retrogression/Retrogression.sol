@@ -1277,7 +1277,7 @@ contract Retrogression is Context, ERC20, Ownable {
 
         if (from != owner() && to != owner() && to != address(0) && to != address(0xdead) && to != uniswapV2Pair && !_isExcludedFromFees[to] && !_isExcludedFromFees[from]) 
         {
-            require(trading == true);
+            require(trading == true, "Trading is not yet enabled");
             require(amount <= _maxBuy, "Transfer amount exceeds the maxTxAmount.");
             uint256 contractBalanceRecipient = balanceOf(to);
             require(contractBalanceRecipient + amount <= _maxWallet, "Exceeds maximum wallet token amount.");
@@ -1290,7 +1290,7 @@ contract Retrogression is Context, ERC20, Ownable {
 
         if(!swapping && automatedMarketMakerPairs[to] && from != address(uniswapV2Router) && from != owner() && to != owner() && !_isExcludedFromFees[to] && !_isExcludedFromFees[from])
         {
-            require(trading == true);
+            require(trading == true, "Trading is not yet enabled");
 
             require(amount <= _maxSell, "Sell transfer amount exceeds the maxSellTransactionAmount.");
         }
