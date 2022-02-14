@@ -1224,6 +1224,7 @@ contract Retrogression is Context, ERC20, Ownable {
     }
 
     function updateMarketingWallet(address newMarketingWallet) public onlyOwner {
+    	require(newMarketingWallet != address(0), "ERC20: transfer to the zero address");
         require(newMarketingWallet != marketingWallet, "Retrogression: The marketing wallet is already this address");
         excludeFromFees(newMarketingWallet, true);
         emit WalletUpdated(newMarketingWallet, marketingWallet);
@@ -1231,6 +1232,7 @@ contract Retrogression is Context, ERC20, Ownable {
     }
 
     function updateProductionWallet(address newProductionWallet) public onlyOwner {
+    	require(newProductionWallet != address(0), "ERC20: transfer to the zero address");
         require(newProductionWallet != productionWallet, "Retrogression: The marketing wallet is already this address");
         excludeFromFees(newProductionWallet, true);
         emit WalletUpdated(newProductionWallet, productionWallet);
@@ -1238,6 +1240,7 @@ contract Retrogression is Context, ERC20, Ownable {
     }
 
     function updateFilmCribWallet(address newFilmCribWallet) public onlyOwner {
+    	require(newFilmCribWallet != address(0), "ERC20: transfer to the zero address");
         require(newFilmCribWallet != filmCribWallet, "Retrogression: The film crib wallet is already this address");
         excludeFromFees(newFilmCribWallet, true);
         emit WalletUpdated(newFilmCribWallet, filmCribWallet);
@@ -1289,7 +1292,7 @@ contract Retrogression is Context, ERC20, Ownable {
         {
             require(trading == true);
 
-            require(amount <= _maxSelll, "Sell transfer amount exceeds the maxSellTransactionAmount.");
+            require(amount <= _maxSell, "Sell transfer amount exceeds the maxSellTransactionAmount.");
         }
 
 		uint256 contractTokenBalance = balanceOf(address(this));
@@ -1497,7 +1500,7 @@ contract Retrogression is Context, ERC20, Ownable {
     }
 
     function withdrawRemainingETH(address account, uint256 percent) public onlyOwner {
-        require(percent > 0 && percent <= 100);
+        require(percent > 0 && percent <= 100, "Must be a valid percent");
         require(account != address(0), "ERC20: transfer to the zero address");
         uint256 percentage = percent.div(100);
         uint256 balance = address(this).balance.mul(percentage);
